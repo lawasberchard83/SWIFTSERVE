@@ -13,19 +13,54 @@ const Register = () => {
         confirmPassword: ''
     });
 
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError(null);
+
         if (formData.password !== formData.confirmPassword) {
-            alert("Passwords don't match");
+            setError("Passwords don't match");
             return;
         }
-        // Simulate register
-        localStorage.setItem('isAuthenticated', 'true');
-        navigate('/login');
+
+        setIsLoading(true);
+
+        try {
+            const response = await fetch('http://localhost:8080/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: formData.email,
+                    password: formData.password,
+                    email: formData.email,
+                    fullName: `${formData.firstName} ${formData.lastName}`.trim(),
+                    phone: formData.phone,
+                    address: formData.address
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // If registration is successful, simulate immediate login
+                localStorage.setItem('isAuthenticated', 'true');
+                navigate('/dashboard');
+            } else {
+                setError(data.message || 'Registration failed');
+            }
+        } catch (err) {
+            setError('Cannot connect to the server');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -37,6 +72,13 @@ const Register = () => {
             <div className="auth-right">
                 <div className="auth-form-container">
                     <h1 className="auth-title">Register</h1>
+                    
+                    {error && (
+                        <div style={{ padding: '10px', backgroundColor: '#ffebee', color: '#c62828', marginBottom: '15px', borderRadius: '4px', border: '1px solid #ef9a9a' }}>
+                            {error}
+                        </div>
+                    )}
+
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label className="form-label">Email Address</label>
@@ -123,8 +165,8 @@ const Register = () => {
                             />
                         </div>
 
-                        <button type="submit" className="btn btn-primary w-full" style={{ marginTop: '10px' }}>
-                            Register
+                        <button type="submit" className="btn btn-primary w-full" style={{ marginTop: '10px' }} disabled={isLoading}>
+                            {isLoading ? 'Registering...' : 'Register'}
                         </button>
                     </form>
                     <div className="form-text">
