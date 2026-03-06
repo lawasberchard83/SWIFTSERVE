@@ -24,6 +24,7 @@ const Register = () => {
             return;
         }
         // Simulate register
+        localStorage.setItem('isAuthenticated', 'true');
         navigate('/login');
     };
 

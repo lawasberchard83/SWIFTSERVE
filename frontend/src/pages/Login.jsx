@@ -9,6 +9,7 @@ const Login = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         // Simulate login
+        localStorage.setItem('isAuthenticated', 'true');
         navigate('/dashboard');
     };
 

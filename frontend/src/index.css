@@ -214,11 +214,11 @@ body {
 }
 
 .login-bg {
-  background: url('./assets/login-bg.jpg') center/cover no-repeat;
+  background: url('https://images.unsplash.com/photo-1526367790999-0150786686a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
 }
 
 .register-bg {
-  background: url('./assets/register-bg.webp') center/cover no-repeat;
+  background: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
 }
 
 /* Dashboard Layout */
@@ -300,6 +300,8 @@ body {
 }
 
 .dashboard-content {
+  width: 100%;
+  flex: 1;
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
@@ -397,4 +399,209 @@ body {
   flex: 1;
   padding: 10px;
   font-size: 14px;
+}
+
+/* Landing Page Styles */
+.landing-page {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.carousel-container {
+  position: relative;
+  width: 100%;
+  height: 70vh;
+  min-height: 400px;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.carousel-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  z-index: 1;
+}
+
+.carousel-slide.active {
+  opacity: 1;
+  z-index: 2;
+}
+
+.carousel-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 40px;
+}
+
+.carousel-quote {
+  color: #fff;
+  font-size: 56px;
+  font-weight: 900;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  max-width: 900px;
+  transform: translateY(30px);
+  opacity: 0;
+  letter-spacing: -1px;
+}
+
+.carousel-slide.active .carousel-quote {
+  animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.3s;
+}
+
+@keyframes slideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 16px;
+  z-index: 10;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dot:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.dot.active {
+  background-color: #fff;
+  transform: scale(1.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.landing-text-section {
+  width: 100%;
+  text-align: center;
+  padding: 100px 20px 60px;
+  background-color: #fff;
+}
+
+.landing-text-section h2 {
+  font-size: 42px;
+  font-weight: 900;
+  color: #111;
+  margin-bottom: 20px;
+  letter-spacing: -1px;
+}
+
+.landing-text-section p {
+  font-size: 20px;
+  color: #555;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.divider-line {
+  width: 80px;
+  height: 6px;
+  background: linear-gradient(90deg, var(--primary-blue), #00c6ff);
+  margin: 40px auto 0;
+  border-radius: 3px;
+}
+
+.landing-grid-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 20px 40px 100px;
+  max-width: 1400px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.grid-card {
+  flex: 1;
+  min-width: 320px;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.grid-image-wrapper {
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+}
+
+.grid-image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.grid-card:hover .grid-image {
+  transform: scale(1.08);
+}
+
+.grid-text {
+  padding: 32px;
+  text-align: center;
+  background: #fff;
+  position: relative;
+}
+
+.grid-text h3 {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: #111;
+}
+
+.grid-text p {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.6;
 }
