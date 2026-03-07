@@ -8,6 +8,7 @@ import AboutUs from './pages/AboutUs';
 import AddToCart from './pages/AddToCart';
 import PaymentPage from './pages/PaymentPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/cart" element={<AddToCart />} />
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
   );

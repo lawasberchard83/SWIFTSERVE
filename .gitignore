@@ -2,3 +2,4 @@ node_modules/
 generate_pdf.js
 BERCHARD_SWIFTSERVE.pdf
 .vscode/
+**/application.properties

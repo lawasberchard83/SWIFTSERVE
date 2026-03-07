@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 
 const CAROUSEL_ITEMS = [
@@ -27,19 +27,31 @@ const LandingPage = () => {
         return () => clearInterval(timer);
     }, []);
 
+    const isAuth = localStorage.getItem('isAuthenticated') === 'true';
+    const navigate = useNavigate();
+
     return (
         <div className="landing-page" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             {/* Dedicated Landing Header */}
             <header className="navbar" style={{ position: 'relative', zIndex: 10, borderBottom: 'none', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
                 <Link to="/" className="nav-brand">SWIFTSERVE</Link>
-                <div style={{ display: 'flex', gap: '20px', marginLeft: '40px', flex: 1 }}>
-                    <Link to="/" className="btn btn-outline" style={{ border: 'none' }}>Home</Link>
-                    <Link to="/dashboard" className="btn btn-outline" style={{ border: 'none' }}>Shop</Link>
-                    <Link to="/about" className="btn btn-outline" style={{ border: 'none' }}>About Us</Link>
-                </div>
-                <div className="nav-actions">
-                    <Link to="/login" className="btn btn-outline" style={{ marginRight: '16px', borderRadius: '24px', padding: '10px 24px' }}>Login</Link>
-                    <Link to="/register" className="btn btn-primary" style={{ borderRadius: '24px', padding: '10px 24px' }}>Register</Link>
+                <div style={{ display: 'flex', gap: '16px', marginLeft: 'auto', alignItems: 'center' }}>
+                    {isAuth ? (
+                        <>
+                            <Link to="/" className="btn btn-outline" style={{ border: 'none', fontWeight: 'bold' }}>Home</Link>
+                            <Link to="/about" className="btn btn-outline" style={{ border: 'none', fontWeight: 'bold' }}>About Us</Link>
+                            <button onClick={() => navigate('/dashboard')} className="btn btn-outline" style={{ borderRadius: '24px', padding: '10px 24px', border: '1px solid currentColor' }}>Order Now</button>
+                            <button onClick={() => navigate('/profile')} className="btn btn-primary" style={{ borderRadius: '24px', padding: '10px 24px' }}>My Profile</button>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/" className="btn btn-outline" style={{ border: 'none', fontWeight: 'bold' }}>Home</Link>
+                            <Link to="/dashboard" className="btn btn-outline" style={{ border: 'none', fontWeight: 'bold' }}>Shop</Link>
+                            <Link to="/about" className="btn btn-outline" style={{ border: 'none', fontWeight: 'bold' }}>About Us</Link>
+                            <Link to="/login" className="btn btn-outline" style={{ borderRadius: '24px', padding: '10px 24px' }}>Login</Link>
+                            <Link to="/register" className="btn btn-primary" style={{ borderRadius: '24px', padding: '10px 24px' }}>Register</Link>
+                        </>
+                    )}
                 </div>
             </header>
 

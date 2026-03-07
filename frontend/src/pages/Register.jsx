@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -29,35 +30,44 @@ const Register = () => {
             return;
         }
 
+        if (!formData.phone.startsWith('0')) {
+            setError("Phone number must start with 0");
+            return;
+        }
+
+        if (formData.phone.length !== 11) {
+            setError("Phone number must be exactly 11 digits long");
+            return;
+        }
+
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:8080/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: formData.email,
-                    password: formData.password,
-                    email: formData.email,
-                    fullName: `${formData.firstName} ${formData.lastName}`.trim(),
-                    phone: formData.phone,
-                    address: formData.address
-                }),
-            });
+            // Insert user directly into the Supabase 'users' table
+            const { data, error: dbError } = await supabase
+                .from('users')
+                .insert([
+                    {
+                        username: formData.email,
+                        password: formData.password,
+                        email: formData.email,
+                        full_name: `${formData.firstName} ${formData.lastName}`.trim(),
+                        phone: formData.phone,
+                        address: formData.address
+                    }
+                ])
+                .select();
 
-            const data = await response.json();
-
-            if (response.ok) {
-                // If registration is successful, simulate immediate login
-                localStorage.setItem('isAuthenticated', 'true');
-                navigate('/dashboard');
+            if (dbError) {
+                setError(dbError.message || 'Registration failed');
             } else {
-                setError(data.message || 'Registration failed');
+                // Registration successful
+                localStorage.setItem('isAuthenticated', 'true');
+                localStorage.setItem('userEmail', formData.email);
+                navigate('/dashboard');
             }
         } catch (err) {
-            setError('Cannot connect to the server');
+            setError('Cannot connect to the server: ' + err.message);
         } finally {
             setIsLoading(false);
         }
@@ -124,7 +134,14 @@ const Register = () => {
                                 name="phone"
                                 className="form-input"
                                 value={formData.phone}
-                                onChange={handleChange}
+                                onChange={(e) => {
+                                    const val = e.target.value.replace(/\D/g, '');
+                                    if (val.length <= 11) {
+                                        setFormData({ ...formData, phone: val });
+                                    }
+                                }}
+                                placeholder="09xxxxxxxxx"
+                                maxLength={11}
                                 required
                             />
                         </div>

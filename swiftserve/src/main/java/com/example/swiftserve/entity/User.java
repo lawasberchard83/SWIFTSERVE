@@ -28,7 +28,6 @@ public class User {
     private String address;
     private String bio;
 
-    @Lob
-    @Column(columnDefinition = "LONGBLOB")
+    @Column(columnDefinition = "BYTEA")
     private byte[] profileImage;
 }

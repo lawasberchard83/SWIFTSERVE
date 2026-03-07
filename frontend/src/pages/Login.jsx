@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -15,25 +16,21 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:8080/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: email,
-                    password: password
-                }),
-            });
+            // Query Supabase for the user with matching email and password
+            const { data, error: dbError } = await supabase
+                .from('users')
+                .select('*')
+                .eq('username', email)
+                .eq('password', password)
+                .single();
 
-            const data = await response.json();
-
-            if (response.ok) {
-                localStorage.setItem('isAuthenticated', 'true');
-                localStorage.setItem('userId', data.userId);
-                navigate('/dashboard');
+            if (dbError || !data) {
+                setError('Invalid email or password');
             } else {
-                setError(data.message || 'Invalid credentials');
+                localStorage.setItem('isAuthenticated', 'true');
+                localStorage.setItem('userEmail', data.email);
+                localStorage.setItem('userName', data.full_name);
+                navigate('/dashboard');
             }
         } catch (err) {
             setError('Cannot connect to the server');

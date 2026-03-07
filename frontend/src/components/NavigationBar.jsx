@@ -4,6 +4,7 @@ import { Search, ShoppingCart, User } from 'lucide-react';
 
 const NavigationBar = ({ showSearch = false }) => {
     const navigate = useNavigate();
+    const isAuth = localStorage.getItem('isAuthenticated') === 'true';
 
     return (
         <header className="navbar">
@@ -24,9 +25,11 @@ const NavigationBar = ({ showSearch = false }) => {
                 <Link to="/" className="btn btn-outline" style={{ border: 'none', padding: '8px 16px', fontWeight: '600' }}>
                     Home
                 </Link>
-                <Link to="/dashboard" className="btn btn-outline" style={{ border: 'none', padding: '8px 16px', fontWeight: '600' }}>
-                    Shop
-                </Link>
+                {!isAuth && (
+                    <Link to="/dashboard" className="btn btn-outline" style={{ border: 'none', padding: '8px 16px', fontWeight: '600' }}>
+                        Shop
+                    </Link>
+                )}
                 <Link to="/about" className="btn btn-outline" style={{ border: 'none', padding: '8px 16px', fontWeight: '600' }}>
                     About Us
                 </Link>
@@ -35,7 +38,7 @@ const NavigationBar = ({ showSearch = false }) => {
                 <button className="icon-btn" onClick={() => navigate('/cart')}>
                     <ShoppingCart size={24} />
                 </button>
-                <button className="icon-btn" style={{ padding: 0, borderRadius: '50%', overflow: 'hidden' }}>
+                <button className="icon-btn" style={{ padding: 0, borderRadius: '50%', overflow: 'hidden' }} onClick={() => navigate('/profile')}>
                     <User size={32} />
                 </button>
             </div>
