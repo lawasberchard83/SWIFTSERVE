@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, User } from 'lucide-react';
+import { Search, ShoppingCart, User, Bookmark } from 'lucide-react';
 
 const NavigationBar = ({ showSearch = false }) => {
     const navigate = useNavigate();
@@ -22,20 +22,21 @@ const NavigationBar = ({ showSearch = false }) => {
             )}
 
             <div className="nav-actions">
-                <Link to="/" className="btn btn-outline" style={{ border: 'none', padding: '8px 16px', fontWeight: '600' }}>
+                <Link to="/" className="btn btn-primary" style={{ padding: '8px 20px', fontWeight: '600', borderRadius: '20px', margin: '0 8px' }}>
                     Home
                 </Link>
-                {!isAuth && (
-                    <Link to="/dashboard" className="btn btn-outline" style={{ border: 'none', padding: '8px 16px', fontWeight: '600' }}>
-                        Shop
-                    </Link>
-                )}
-                <Link to="/about" className="btn btn-outline" style={{ border: 'none', padding: '8px 16px', fontWeight: '600' }}>
+                <Link to="/about" className="btn btn-primary" style={{ padding: '8px 20px', fontWeight: '600', borderRadius: '20px', margin: '0 8px' }}>
                     About Us
+                </Link>
+                <Link to="/dashboard" className="btn btn-primary" style={{ padding: '8px 20px', fontWeight: '600', borderRadius: '20px', margin: '0 8px' }}>
+                    Menu
                 </Link>
                 {/* On landing page we show Login/Register instead of Cart/Profile if not authenticated, 
                     but for now we'll keep the cart/profile icons to replicate the Dashboard/AboutUs style */}
-                <button className="icon-btn" onClick={() => navigate('/cart')}>
+                <button className="icon-btn" onClick={() => navigate('/saved')} title="Saved for later">
+                    <Bookmark size={24} />
+                </button>
+                <button className="icon-btn" onClick={() => navigate('/cart')} title="Cart">
                     <ShoppingCart size={24} />
                 </button>
                 <button className="icon-btn" style={{ padding: 0, borderRadius: '50%', overflow: 'hidden' }} onClick={() => navigate('/profile')}>

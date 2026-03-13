@@ -1,64 +1,91 @@
 import React, { useState } from 'react';
 import { Plus, Minus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Notification from '../components/Notification';
 import NavigationBar from '../components/NavigationBar';
 import Footer from '../components/Footer';
 
 const AddToCart = () => {
     const navigate = useNavigate();
     // Mock cart items based on the provided design
-    const [cartItems, setCartItems] = useState([
-        {
-            id: 1,
-            name: 'Product 42',
-            description: 'Brief Overview and Practical Application',
-            price: 11.99,
-            originalPrice: 89.99,
-            quantity: 1,
-            image: '' // Placeholder text used in design
-        },
-        {
-            id: 2,
-            name: 'Product 33',
-            description: 'Brief Overview and Practical Application',
-            price: 11.99,
-            originalPrice: 89.99,
-            quantity: 1,
-            image: '' // Placeholder text used in design
+    const [cartItems, setCartItems] = useState(() => {
+        const savedCart = localStorage.getItem('cartItems');
+        if (savedCart) {
+            try {
+                return JSON.parse(savedCart);
+            } catch (e) {
+                console.error("Could not parse cart", e);
+            }
         }
-    ]);
+        return [];
+    });
+    
+    const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
+    
+    const showNotification = (message, type = 'success') => {
+        setNotification({ show: true, message, type });
+    };
+
+    // Save to local storage whenever cart items change
+    React.useEffect(() => {
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    }, [cartItems]);
 
     const updateQuantity = (id, delta) => {
         setCartItems(cartItems.map(item => {
             if (item.id === id) {
-                const newQuantity = Math.max(1, item.quantity + delta);
+                const maxStock = item.stock_quantity || 1; 
+                let newQuantity = item.quantity + delta;
+                
+                if (newQuantity > maxStock) newQuantity = maxStock;
+                if (newQuantity < 1) newQuantity = 1;
+                
                 return { ...item, quantity: newQuantity };
             }
             return item;
         }));
     };
 
-    const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const tax = subtotal * 0.194; // Roughly based on the $4.66 tax for $23.98 subtotal
+    const handleRemove = (id) => {
+        setCartItems(cartItems.filter(item => item.id !== id));
+    };
+
+    const handleCancelAll = () => {
+        if(window.confirm('Are you sure you want to clear your cart?')) {
+            setCartItems([]);
+            localStorage.removeItem('cartItems');
+        }
+    };
+
+    const subtotal = cartItems.reduce((acc, item) => acc + ((item.price || 0) * (item.quantity || 1)), 0);
+    const tax = subtotal * 0.05; // Using 5% tax to match Payment UI
     const total = subtotal + tax;
 
     return (
-        <div className="cart-page" style={{ minHeight: '100vh', backgroundColor: '#fff' }}>
+        <div className="cart-page" style={{ minHeight: '100vh', backgroundColor: '#fff', display: 'flex', flexDirection: 'column' }}>
             {/* Header */}
             <NavigationBar showSearch={true} />
 
-            {/* Blue Banner */}
-            <div style={{ backgroundColor: '#0084ff', color: 'white', textAlign: 'center', padding: '40px 20px' }}>
-                <h1 style={{ fontSize: '36px', fontWeight: '800', marginBottom: '12px' }}>
+            {/* Consistent Hero Banner */}
+            <section className="hero" style={{
+                backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7)), url(https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600&auto=format&fit=crop)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                padding: '60px 20px',
+                color: 'white',
+                textAlign: 'center',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.1)'
+            }}>
+                <h1 style={{ textShadow: '0 4px 12px rgba(0,0,0,0.5)', fontSize: '36px', marginBottom: '12px' }}>
                     Campus food, delivered fast ⚡
                 </h1>
-                <p style={{ fontSize: '16px', fontWeight: '600' }}>
+                <p style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)', fontSize: '18px', maxWidth: '800px', margin: '0 auto' }}>
                     Order from your favorite campus vendors and pick up in minutes. No more long lines.
                 </p>
-            </div>
+            </section>
 
             {/* Cart Content */}
-            <div style={{ maxWidth: '1200px', margin: '40px auto', padding: '0 20px', display: 'flex', gap: '60px' }}>
+            <div style={{ maxWidth: '1200px', margin: '40px auto', padding: '0 20px', display: 'flex', gap: '60px', flex: 1, width: '100%' }}>
 
                 {/* Orders List */}
                 <div style={{ flex: '1 1 60%' }}>
@@ -78,16 +105,19 @@ const AddToCart = () => {
                                     height: '140px'
                                 }}
                             >
-                                {/* Item Image Placeholder */}
+                                {/* Item Image Placeholder / Real Image */}
                                 <div style={{
                                     width: '240px',
                                     backgroundColor: '#f1f1f1',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    borderRight: '1px solid #eaeaea'
+                                    borderRight: '1px solid #eaeaea',
+                                    backgroundImage: item.image ? `url(${item.image})` : 'none',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center'
                                 }}>
-                                    <span style={{ fontSize: '12px', color: '#666' }}>Product Image</span>
+                                    {!item.image && <span style={{ fontSize: '12px', color: '#666' }}>Product Image</span>}
                                 </div>
 
                                 {/* Item Details */}
@@ -122,31 +152,46 @@ const AddToCart = () => {
                                         </span>
                                         <button
                                             onClick={() => updateQuantity(item.id, 1)}
-                                            style={{ backgroundColor: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                                            style={{ backgroundColor: 'transparent', border: 'none', cursor: item.quantity >= (item.stock_quantity || 1) ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', color: item.quantity >= (item.stock_quantity || 1) ? '#ccc' : 'inherit' }}
+                                            disabled={item.quantity >= (item.stock_quantity || 1)}
                                         >
-                                            <Plus size={16} color="#666" />
+                                            <Plus size={16} />
                                         </button>
                                     </div>
 
-                                    {/* Price position top right */}
+                                    {/* Price and Remove position top right */}
                                     <div style={{
                                         position: 'absolute',
                                         top: '20px',
                                         right: '20px',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        alignItems: 'flex-end'
+                                        alignItems: 'flex-end',
+                                        gap: '8px'
                                     }}>
-                                        <span style={{ fontSize: '20px', fontWeight: '800', color: '#ff4d4f', marginBottom: '4px' }}>
-                                            €{item.price.toFixed(2)}
+                                        <span style={{ fontSize: '20px', fontWeight: '800', color: '#ff4d4f' }}>
+                                            €{(item.price || 0).toFixed(2)}
                                         </span>
-                                        <span style={{ fontSize: '14px', fontWeight: '600', color: '#555', textDecoration: 'line-through' }}>
-                                            €{item.originalPrice.toFixed(2)}
-                                        </span>
+                                        {item.originalPrice > item.price && (
+                                            <span style={{ fontSize: '14px', fontWeight: '600', color: '#555', textDecoration: 'line-through' }}>
+                                                €{(item.originalPrice || 0).toFixed(2)}
+                                            </span>
+                                        )}
+                                        <button 
+                                            onClick={() => handleRemove(item.id)}
+                                            style={{ marginTop: 'auto', background: 'none', border: 'none', color: '#888', textDecoration: 'underline', fontSize: '12px', cursor: 'pointer' }}
+                                        >
+                                            Remove
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         ))}
+                        {cartItems.length === 0 && (
+                            <div style={{ padding: '40px', textAlign: 'center', color: '#888', border: '1px dashed #ccc', borderRadius: '8px' }}>
+                                Your cart is empty.
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -163,7 +208,7 @@ const AddToCart = () => {
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px', fontSize: '14px', color: '#555' }}>
-                            <span>TAX</span>
+                            <span>TAX (5%)</span>
                             <span style={{ fontWeight: '800', color: '#111' }}>€{tax.toFixed(2)}</span>
                         </div>
                     </div>
@@ -174,16 +219,38 @@ const AddToCart = () => {
                     </div>
 
                     <div style={{ display: 'flex', gap: '16px' }}>
-                        <button onClick={() => navigate('/payment')} className="btn btn-primary" style={{ flex: 1, padding: '12px', fontSize: '14px', borderRadius: '4px' }}>
+                        <button 
+                            onClick={() => {
+                                                if(cartItems.length === 0) {
+                                                    showNotification('Your cart is empty!', 'error');
+                                                    return;
+                                                }
+                                                navigate('/payment');
+                                            }} 
+                            className="btn btn-primary" 
+                            style={{ flex: 1, padding: '12px', fontSize: '14px', borderRadius: '4px' }}
+                        >
                             Checkout
                         </button>
-                        <button className="btn btn-outline" style={{ flex: 1, padding: '12px', fontSize: '14px', borderRadius: '4px' }}>
+                        <button 
+                            onClick={handleCancelAll}
+                            className="btn btn-outline" 
+                            style={{ flex: 1, padding: '12px', fontSize: '14px', borderRadius: '4px' }}
+                        >
                             Cancel all
                         </button>
                     </div>
                 </div>
 
             </div>
+            
+            {notification.show && (
+                <Notification 
+                    message={notification.message} 
+                    type={notification.type} 
+                    onClose={() => setNotification({ show: false, message: '', type: 'success' })} 
+                />
+            )}
 
             <Footer />
         </div>

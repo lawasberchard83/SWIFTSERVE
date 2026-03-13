@@ -13,7 +13,9 @@ const ProductModal = ({ isOpen, onClose, product, onAddToCart }) => {
     };
 
     const handleIncrement = () => {
-        setQuantity(prev => prev + 1);
+        if (quantity < (product.stock_quantity || 1)) {
+            setQuantity(prev => prev + 1);
+        }
     };
 
     const handleDecrement = () => {
@@ -153,9 +155,10 @@ const ProductModal = ({ isOpen, onClose, product, onAddToCart }) => {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    cursor: 'pointer',
-                                    color: '#333'
+                                    cursor: quantity >= (product.stock_quantity || 1) ? 'not-allowed' : 'pointer',
+                                    color: quantity >= (product.stock_quantity || 1) ? '#ccc' : '#333'
                                 }}
+                                disabled={quantity >= (product.stock_quantity || 1)}
                             >
                                 <Plus size={16} />
                             </button>

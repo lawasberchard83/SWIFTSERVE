@@ -15,6 +15,7 @@ const emptyProduct = {
     category: 'MEALS',
     rating: '',
     in_stock: true,
+    stock_quantity: 0,
 };
 
 const AdminDashboard = () => {
@@ -73,6 +74,7 @@ const AdminDashboard = () => {
             category: product.category || 'MEALS',
             rating: product.rating || '',
             in_stock: product.in_stock !== false,
+            stock_quantity: product.stock_quantity || 0,
         });
         setShowModal(true);
     };
@@ -89,6 +91,7 @@ const AdminDashboard = () => {
             category: formData.category,
             rating: formData.rating ? parseFloat(formData.rating) : null,
             in_stock: formData.in_stock,
+            stock_quantity: parseInt(formData.stock_quantity) || 0,
         };
 
         if (editingProduct) {
@@ -301,7 +304,7 @@ const AdminDashboard = () => {
                                         <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '13px', fontWeight: '600', color: '#555' }}>Category</th>
                                         <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '13px', fontWeight: '600', color: '#555' }}>Price</th>
                                         <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '13px', fontWeight: '600', color: '#555' }}>Vendor</th>
-                                        <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '13px', fontWeight: '600', color: '#555' }}>In Stock</th>
+                                        <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '13px', fontWeight: '600', color: '#555' }}>Stock Qty</th>
                                         <th style={{ padding: '14px 16px', textAlign: 'center', fontSize: '13px', fontWeight: '600', color: '#555' }}>Actions</th>
                                     </tr>
                                 </thead>
@@ -326,10 +329,10 @@ const AdminDashboard = () => {
                                             <td style={{ padding: '12px 16px' }}>
                                                 <span style={{
                                                     padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: '600',
-                                                    backgroundColor: product.in_stock ? '#dcfce7' : '#fee2e2',
-                                                    color: product.in_stock ? '#166534' : '#991b1b',
+                                                    backgroundColor: product.stock_quantity > 0 ? '#dcfce7' : '#fee2e2',
+                                                    color: product.stock_quantity > 0 ? '#166534' : '#991b1b',
                                                 }}>
-                                                    {product.in_stock ? 'Yes' : 'No'}
+                                                    {product.stock_quantity || 0} left
                                                 </span>
                                             </td>
                                             <td style={{ padding: '12px 16px', textAlign: 'center' }}>
@@ -429,9 +432,9 @@ const AdminDashboard = () => {
                                 <label style={labelStyle}>Rating (0-5)</label>
                                 <input style={inputStyle} type="number" step="0.1" min="0" max="5" name="rating" value={formData.rating} onChange={handleChange} placeholder="4.5" />
                             </div>
-                            <div style={{ ...inputGroupStyle, flex: 1, display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '20px' }}>
-                                <input type="checkbox" name="in_stock" checked={formData.in_stock} onChange={handleChange} style={{ width: '18px', height: '18px' }} />
-                                <label style={{ fontSize: '14px', fontWeight: '600', color: '#333' }}>In Stock</label>
+                            <div style={{ ...inputGroupStyle, flex: 1 }}>
+                                <label style={labelStyle}>Stock Quantity *</label>
+                                <input style={inputStyle} type="number" min="0" name="stock_quantity" value={formData.stock_quantity} onChange={handleChange} placeholder="0" />
                             </div>
                         </div>
 

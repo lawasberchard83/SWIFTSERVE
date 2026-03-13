@@ -52,9 +52,9 @@ const AboutUs = () => {
                 </div>
                 <div style={{ flex: '0 0 400px' }}>
                     <img
-                        src="https://images.unsplash.com/photo-1617347454431-f49d7ff5c3b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                        alt="Delivery"
-                        style={{ width: '100%', height: '400px', objectFit: 'cover', backgroundColor: '#ccc' }}
+                        src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800"
+                        alt="Campus Delivery"
+                        style={{ width: '100%', height: '400px', objectFit: 'cover', backgroundColor: '#ccc', borderRadius: '12px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}
                     />
                 </div>
             </section>

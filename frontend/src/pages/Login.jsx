@@ -86,11 +86,21 @@ const Login = () => {
         <div className="auth-container flex w-full">
             <div className="auth-left login-bg">
                 <div className="auth-logo">SWIFTSERVE</div>
-                <div className="auth-welcome">WELCOME BACK !</div>
+                <div className="auth-quote" style={{ zIndex: 10, position: 'relative', margin: 'auto 0 40px 0' }}>
+                    <h2 style={{ fontSize: '36px', fontWeight: '800', color: 'white', marginBottom: '16px', lineHeight: '1.2', textShadow: '0 4px 12px rgba(0,0,0,0.6)' }}>
+                        "Your favorites,<br/>just a click away."
+                    </h2>
+                    <p style={{ fontSize: '18px', color: '#e0e0e0', fontWeight: '500', lineHeight: '1.5', textShadow: '0 2px 8px rgba(0,0,0,0.6)', maxWidth: '400px' }}>
+                        Sign in to pick up where you left off. The best meals are waiting for you. Seamless ordering, rapid delivery.
+                    </p>
+                </div>
             </div>
             <div className="auth-right">
                 <div className="auth-form-container">
-                    <h1 className="auth-title">LOGIN</h1>
+                    <div>
+                        <h1 className="auth-title">Welcome Back</h1>
+                        <p className="auth-subtitle">Sign in to continue your journey.</p>
+                    </div>
 
                     {error && (
                         <div style={{ padding: '10px', backgroundColor: '#ffebee', color: '#c62828', marginBottom: '15px', borderRadius: '4px', border: '1px solid #ef9a9a' }}>
