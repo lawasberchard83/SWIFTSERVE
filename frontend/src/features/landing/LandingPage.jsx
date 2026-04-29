@@ -39,7 +39,7 @@ const LandingPage = () => {
                     {isAuth ? (
                         <>
                             <Link to="/" className="btn btn-outline" style={{ border: 'none', fontWeight: 'bold' }}>Home</Link>
-                            <Link to="/about" className="btn btn-outline" style={{ border: 'none', fontWeight: 'bold' }}>About Us</Link>
+                            <Link to="/about" className="btn btn-outline" style={{ border: 'none', fontWeight: 'bold' }}>About Me</Link>
                             <button onClick={() => navigate('/dashboard')} className="btn btn-outline" style={{ borderRadius: '24px', padding: '10px 24px', border: '1px solid currentColor' }}>Order Now</button>
                             <button onClick={() => navigate('/profile')} className="btn btn-primary" style={{ borderRadius: '24px', padding: '10px 24px' }}>My Profile</button>
                         </>
@@ -47,7 +47,7 @@ const LandingPage = () => {
                         <>
                             <Link to="/" className="btn btn-outline" style={{ border: 'none', fontWeight: 'bold' }}>Home</Link>
                             <Link to="/dashboard" className="btn btn-outline" style={{ border: 'none', fontWeight: 'bold' }}>Shop</Link>
-                            <Link to="/about" className="btn btn-outline" style={{ border: 'none', fontWeight: 'bold' }}>About Us</Link>
+                            <Link to="/about" className="btn btn-outline" style={{ border: 'none', fontWeight: 'bold' }}>About Me</Link>
                             <Link to="/login" className="btn btn-outline" style={{ borderRadius: '24px', padding: '10px 24px' }}>Login</Link>
                             <Link to="/register" className="btn btn-primary" style={{ borderRadius: '24px', padding: '10px 24px' }}>Register</Link>
                         </>
