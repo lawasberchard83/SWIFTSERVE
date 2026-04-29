@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Plus, Minus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Notification from '../components/Notification';
-import NavigationBar from '../components/NavigationBar';
-import Footer from '../components/Footer';
+import Notification from '../../components/Notification';
+import NavigationBar from '../../components/NavigationBar';
+import Footer from '../../components/Footer';
 
 const AddToCart = () => {
     const navigate = useNavigate();
@@ -170,11 +170,11 @@ const AddToCart = () => {
                                         gap: '8px'
                                     }}>
                                         <span style={{ fontSize: '20px', fontWeight: '800', color: '#ff4d4f' }}>
-                                            €{(item.price || 0).toFixed(2)}
+                                            ₱{(item.price || 0).toFixed(2)}
                                         </span>
                                         {item.originalPrice > item.price && (
                                             <span style={{ fontSize: '14px', fontWeight: '600', color: '#555', textDecoration: 'line-through' }}>
-                                                €{(item.originalPrice || 0).toFixed(2)}
+                                                ₱{(item.originalPrice || 0).toFixed(2)}
                                             </span>
                                         )}
                                         <button 
@@ -204,18 +204,18 @@ const AddToCart = () => {
                     <div style={{ borderTop: '2px solid #333', paddingTop: '24px', paddingBottom: '24px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px', fontSize: '14px', color: '#555' }}>
                             <span>Sub-total</span>
-                            <span style={{ fontWeight: '800', color: '#111' }}>€{subtotal.toFixed(2)}</span>
+                            <span style={{ fontWeight: '800', color: '#111' }}>₱{subtotal.toFixed(2)}</span>
                         </div>
 
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px', fontSize: '14px', color: '#555' }}>
                             <span>TAX (5%)</span>
-                            <span style={{ fontWeight: '800', color: '#111' }}>€{tax.toFixed(2)}</span>
+                            <span style={{ fontWeight: '800', color: '#111' }}>₱{tax.toFixed(2)}</span>
                         </div>
                     </div>
 
                     <div style={{ borderTop: '2px solid #333', paddingTop: '24px', display: 'flex', justifyContent: 'space-between', marginBottom: '40px' }}>
                         <span style={{ fontSize: '14px', fontWeight: '800', color: '#111' }}>TOTAL</span>
-                        <span style={{ fontSize: '14px', fontWeight: '800', color: '#111' }}>€{total.toFixed(2)}</span>
+                        <span style={{ fontSize: '14px', fontWeight: '800', color: '#111' }}>₱{total.toFixed(2)}</span>
                     </div>
 
                     <div style={{ display: 'flex', gap: '16px' }}>

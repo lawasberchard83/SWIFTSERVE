@@ -1,6 +1,6 @@
-package com.example.swiftserve.repository;
+package com.example.swiftserve.user;
 
-import com.example.swiftserve.entity.User;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ShoppingCart, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
-import ProductModal from '../components/modal/ProductModal';
-import AuthModal from '../components/modal/AuthModal';
-import Notification from '../components/Notification';
-import NavigationBar from '../components/NavigationBar';
-import Footer from '../components/Footer';
+import { supabase } from '../../supabaseClient';
+import ProductModal from '../../components/modal/ProductModal';
+import AuthModal from '../../components/modal/AuthModal';
+import Notification from '../../components/Notification';
+import NavigationBar from '../../components/NavigationBar';
+import Footer from '../../components/Footer';
 
 const Dashboard = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('ALL');
+    const [searchQuery, setSearchQuery] = useState('');
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -32,10 +33,13 @@ const Dashboard = () => {
         fetchProducts();
     }, []);
 
-    // Filter products by category
-    const filteredProducts = activeTab === 'ALL'
-        ? products
-        : products.filter(p => p.category === activeTab);
+    // Filter products by category and search
+    const filteredProducts = products.filter(p => {
+        const matchesCategory = activeTab === 'ALL' || p.category === activeTab;
+        const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                              (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()));
+        return matchesCategory && matchesSearch;
+    });
 
     const showNotification = (message, type = 'success') => {
         setNotification({ show: true, message, type });
@@ -132,7 +136,7 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            <NavigationBar showSearch={true} />
+            <NavigationBar showSearch={true} searchQuery={searchQuery} onSearch={setSearchQuery} />
 
             <section className="hero" style={{
                 backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7)), url(https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1600&auto=format&fit=crop)',

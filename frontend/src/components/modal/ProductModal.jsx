@@ -115,7 +115,7 @@ const ProductModal = ({ isOpen, onClose, product, onAddToCart }) => {
 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
                         <div style={{ fontSize: '24px', fontWeight: '800', color: '#111' }}>
-                            ${product.price.toFixed(2)}
+                            ₱{product.price.toFixed(2)}
                         </div>
 
                         {/* Quantity Selector */}
@@ -170,7 +170,7 @@ const ProductModal = ({ isOpen, onClose, product, onAddToCart }) => {
                         className="btn btn-primary w-full"
                         style={{ padding: '16px', fontSize: '16px', fontWeight: '700' }}
                     >
-                        Add to Cart — ${totalPrice}
+                        Add to Cart — ₱{totalPrice}
                     </button>
                 </div>
             </div>

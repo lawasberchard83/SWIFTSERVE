@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NavigationBar from '../components/NavigationBar';
-import Footer from '../components/Footer';
-import Notification from '../components/Notification';
+import NavigationBar from '../../components/NavigationBar';
+import Footer from '../../components/Footer';
+import Notification from '../../components/Notification';
 import { Trash2, ShoppingCart } from 'lucide-react';
 
 const SaveForLater = () => {

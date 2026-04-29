@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
+import { supabase } from '../../supabaseClient';
 
 const calculatePasswordStrength = (password) => {
     if (!password) return { level: '', color: '', width: '0%', score: 0 };

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, User, Bookmark } from 'lucide-react';
+import { Search, ShoppingCart, User, Bookmark, Package } from 'lucide-react';
 
-const NavigationBar = ({ showSearch = false }) => {
+const NavigationBar = ({ showSearch = false, searchQuery = '', onSearch }) => {
     const navigate = useNavigate();
     const isAuth = localStorage.getItem('isAuthenticated') === 'true';
 
@@ -17,6 +17,8 @@ const NavigationBar = ({ showSearch = false }) => {
                         type="text"
                         className="search-input"
                         placeholder="Search for food..."
+                        value={searchQuery}
+                        onChange={(e) => onSearch && onSearch(e.target.value)}
                     />
                 </div>
             )}
@@ -26,7 +28,7 @@ const NavigationBar = ({ showSearch = false }) => {
                     Home
                 </Link>
                 <Link to="/about" className="btn btn-primary" style={{ padding: '8px 20px', fontWeight: '600', borderRadius: '20px', margin: '0 8px' }}>
-                    About Us
+                    About Me
                 </Link>
                 <Link to="/dashboard" className="btn btn-primary" style={{ padding: '8px 20px', fontWeight: '600', borderRadius: '20px', margin: '0 8px' }}>
                     Menu
@@ -35,6 +37,9 @@ const NavigationBar = ({ showSearch = false }) => {
                     but for now we'll keep the cart/profile icons to replicate the Dashboard/AboutUs style */}
                 <button className="icon-btn" onClick={() => navigate('/saved')} title="Saved for later">
                     <Bookmark size={24} />
+                </button>
+                <button className="icon-btn" onClick={() => navigate('/orders')} title="My Orders">
+                    <Package size={24} />
                 </button>
                 <button className="icon-btn" onClick={() => navigate('/cart')} title="Cart">
                     <ShoppingCart size={24} />

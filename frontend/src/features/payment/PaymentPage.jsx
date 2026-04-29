@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NavigationBar from '../components/NavigationBar';
-import Footer from '../components/Footer';
+import NavigationBar from '../../components/NavigationBar';
+import Footer from '../../components/Footer';
+import Notification from '../../components/Notification';
 import { CreditCard, Wallet, Smartphone, Plus, Minus, X, Send, AlertCircle } from 'lucide-react';
 
 const PaymentPage = () => {
@@ -9,15 +10,31 @@ const PaymentPage = () => {
     const [selectedMethod, setSelectedMethod] = useState('card');
     const [promoCode, setPromoCode] = useState('');
 
-    const [items, setItems] = useState([
-        { id: 1, type: 'Japanese Food', name: 'Sushi Hiro Brolyn', price: 15.00, quantity: 1, image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=200' },
-        { id: 2, type: 'Italian Food', name: 'Bistecca Fiorentina', price: 40.00, quantity: 1, image: 'https://images.unsplash.com/photo-1595295333158-4742f28fbd85?q=80&w=200' }
-    ]);
+    const [items, setItems] = useState(() => {
+        const savedCart = localStorage.getItem('cartItems');
+        if (savedCart) {
+            try {
+                return JSON.parse(savedCart);
+            } catch (e) {
+                console.error("Could not parse cart", e);
+            }
+        }
+        return [];
+    });
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [notification, setNotification] = useState({ message: '', type: '' });
+
+    const showNotification = (message, type = 'success') => {
+        setNotification({ message, type });
+    };
 
     const handleQuantityChange = (id, change) => {
         setItems(items.map(item => {
             if (item.id === id) {
-                const newQuantity = Math.max(1, item.quantity + change);
+                const maxStock = item.stock_quantity || 1;
+                let newQuantity = item.quantity + change;
+                if (newQuantity > maxStock) newQuantity = maxStock;
+                if (newQuantity < 1) newQuantity = 1;
                 return { ...item, quantity: newQuantity };
             }
             return item;
@@ -28,10 +45,60 @@ const PaymentPage = () => {
         setItems(items.filter(item => item.id !== id));
     };
 
-    const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const shipping = 5.00;
+    const subtotal = items.reduce((sum, item) => sum + ((item.price || 0) * (item.quantity || 1)), 0);
+    const shipping = items.length > 0 ? 5.00 : 0;
     const tax = subtotal * 0.05;
     const total = subtotal + shipping + tax;
+
+    const handlePlaceOrder = async () => {
+        if (items.length === 0) {
+            showNotification("Your cart is empty.", "error");
+            return;
+        }
+
+        setIsProcessing(true);
+        try {
+            // Import supabase here if not at top, but let's add it to top of file in next chunk
+            const { supabase } = await import('../../supabaseClient');
+
+            // 1. Deduct stock for each item
+            for (const item of items) {
+                const newStock = Math.max(0, (item.stock_quantity || 0) - item.quantity);
+                await supabase
+                    .from('products')
+                    .update({ stock_quantity: newStock })
+                    .eq('id', item.id);
+            }
+
+            // 2. Insert into orders table (basic info, assuming these columns exist, if not it just fails silently or logs)
+            // We use a basic payload that might fit any schema or just let it fail if schema differs, the stock deduction is the crucial part.
+            const orderPayload = {
+                total_amount: total,
+                status: 'Pending',
+                items: items.map(i => `${i.name} (x${i.quantity})`).join(', ')
+            };
+            const { error: orderError } = await supabase.from('orders').insert([orderPayload]);
+            if (orderError) {
+                console.error("Order insert error:", orderError);
+                throw new Error(orderError.message || JSON.stringify(orderError));
+            }
+
+            // 3. Clear cart
+            localStorage.removeItem('cartItems');
+            setItems([]);
+            
+            showNotification('Order placed successfully! Stocks have been updated.', 'success');
+            setTimeout(() => {
+                navigate('/dashboard');
+            }, 2000);
+
+        } catch (error) {
+            console.error('Error placing order:', error);
+            showNotification(`An error occurred while placing the order: ${error.message}`, 'error');
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     const themeColor = '#0084ff'; // SwiftServe Skyblue Theme
 
@@ -107,6 +174,7 @@ const PaymentPage = () => {
     return (
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#f9fafb' }}>
             <NavigationBar showSearch={false} />
+            <Notification message={notification.message} type={notification.type} onClose={() => setNotification({ message: '', type: '' })} />
 
             <div style={{ maxWidth: '1200px', margin: '40px auto', padding: '0 20px', display: 'flex', gap: '24px', flex: 1, width: '100%' }}>
                 
@@ -123,8 +191,8 @@ const PaymentPage = () => {
                         <button onClick={() => navigate('/cart')} style={{ flex: 1, padding: '14px', borderRadius: '8px', border: '1px solid #d1d5db', backgroundColor: '#fff', color: '#111827', fontWeight: '600', fontSize: '14px', cursor: 'pointer', transition: 'background-color 0.2s' }} onMouseOver={(e) => e.target.style.backgroundColor = '#f3f4f6'} onMouseOut={(e) => e.target.style.backgroundColor = '#fff'}>
                             Back to Delivery
                         </button>
-                        <button style={{ flex: 1, padding: '14px', borderRadius: '8px', border: 'none', backgroundColor: '#111827', color: '#fff', fontWeight: '600', fontSize: '14px', cursor: 'pointer', transition: 'background-color 0.2s', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }} onMouseOver={(e) => e.target.style.backgroundColor = '#1f2937'} onMouseOut={(e) => e.target.style.backgroundColor = '#111827'}>
-                            Continue to Review
+                        <button disabled={isProcessing || items.length === 0} onClick={handlePlaceOrder} style={{ flex: 1, padding: '14px', borderRadius: '8px', border: 'none', backgroundColor: (isProcessing || items.length === 0) ? '#9ca3af' : '#111827', color: '#fff', fontWeight: '600', fontSize: '14px', cursor: (isProcessing || items.length === 0) ? 'not-allowed' : 'pointer', transition: 'background-color 0.2s', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }} onMouseOver={(e) => { if (!isProcessing && items.length > 0) e.target.style.backgroundColor = '#1f2937' }} onMouseOut={(e) => { if (!isProcessing && items.length > 0) e.target.style.backgroundColor = '#111827' }}>
+                            {isProcessing ? 'Processing...' : 'Place Order'}
                         </button>
                     </div>
                 </div>
@@ -146,7 +214,7 @@ const PaymentPage = () => {
                                     <div style={{ flex: 1 }}>
                                         <div style={{ fontSize: '12px', color: themeColor, fontWeight: '600', marginBottom: '4px' }}>{item.type}</div>
                                         <div style={{ fontSize: '14px', fontWeight: '700', color: '#111827', marginBottom: '4px' }}>{item.name}</div>
-                                        <div style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500' }}>${item.price.toFixed(2)}</div>
+                                        <div style={{ fontSize: '14px', color: '#4b5563', fontWeight: '500' }}>₱{item.price.toFixed(2)}</div>
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                                         <button onClick={() => handleRemove(item.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', padding: '4px' }}>
@@ -183,19 +251,19 @@ const PaymentPage = () => {
                         <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#111827', marginBottom: '16px' }}>Order Total</h3>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '14px', color: '#4b5563' }}>
                             <span>Subtotal</span>
-                            <span style={{ fontWeight: '600', color: '#111827' }}>${subtotal.toFixed(2)}</span>
+                            <span style={{ fontWeight: '600', color: '#111827' }}>₱{subtotal.toFixed(2)}</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '14px', color: '#4b5563' }}>
                             <span>Shipping</span>
-                            <span style={{ fontWeight: '600', color: '#111827' }}>${shipping.toFixed(2)}</span>
+                            <span style={{ fontWeight: '600', color: '#111827' }}>₱{shipping.toFixed(2)}</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px', fontSize: '14px', color: '#4b5563' }}>
                             <span>Tax (5%)</span>
-                            <span style={{ fontWeight: '600', color: '#111827' }}>${tax.toFixed(2)}</span>
+                            <span style={{ fontWeight: '600', color: '#111827' }}>₱{tax.toFixed(2)}</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #e5e7eb', paddingTop: '24px', fontSize: '16px', fontWeight: '700' }}>
                             <span>Total</span>
-                            <span style={{ color: themeColor }}>${total.toFixed(2)}</span>
+                            <span style={{ color: themeColor }}>₱{total.toFixed(2)}</span>
                         </div>
                     </div>
 

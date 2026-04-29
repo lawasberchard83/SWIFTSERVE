@@ -1,7 +1,7 @@
-package com.example.swiftserve.service;
+package com.example.swiftserve.user;
 
-import com.example.swiftserve.entity.User;
-import com.example.swiftserve.repository.UserRepository;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

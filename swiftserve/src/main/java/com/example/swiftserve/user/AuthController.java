@@ -1,7 +1,7 @@
-package com.example.swiftserve.controller;
+package com.example.swiftserve.user;
 
-import com.example.swiftserve.entity.User;
-import com.example.swiftserve.service.UserService;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

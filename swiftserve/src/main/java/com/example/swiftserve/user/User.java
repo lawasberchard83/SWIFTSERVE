@@ -1,4 +1,4 @@
-package com.example.swiftserve.entity;
+package com.example.swiftserve.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
