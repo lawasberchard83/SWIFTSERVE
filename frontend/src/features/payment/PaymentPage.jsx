@@ -9,6 +9,7 @@ const PaymentPage = () => {
     const navigate = useNavigate();
     const [selectedMethod, setSelectedMethod] = useState('card');
     const [promoCode, setPromoCode] = useState('');
+    const [deliveryAddress, setDeliveryAddress] = useState('');
 
     const [items, setItems] = useState(() => {
         const savedCart = localStorage.getItem('cartItems');
@@ -75,7 +76,8 @@ const PaymentPage = () => {
             const orderPayload = {
                 total_amount: total,
                 status: 'Pending',
-                items: items.map(i => `${i.name} (x${i.quantity})`).join(', ')
+                items: items.map(i => `${i.name} (x${i.quantity})`).join(', '),
+                shipping_address: deliveryAddress
             };
             const { error: orderError } = await supabase.from('orders').insert([orderPayload]);
             if (orderError) {
@@ -229,6 +231,19 @@ const PaymentPage = () => {
                                 </div>
                             ))
                         )}
+                    </div>
+
+                    <div style={{ marginBottom: '32px' }}>
+                        <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#111827', marginBottom: '12px' }}>Delivery Details</h3>
+                        <div style={{ display: 'flex', border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
+                            <input 
+                                type="text" 
+                                placeholder="Landmark / Building & Room (Optional)" 
+                                value={deliveryAddress}
+                                onChange={(e) => setDeliveryAddress(e.target.value)}
+                                style={{ flex: 1, padding: '12px 16px', border: 'none', outline: 'none', fontSize: '14px' }}
+                            />
+                        </div>
                     </div>
 
                     <div style={{ marginBottom: '32px' }}>

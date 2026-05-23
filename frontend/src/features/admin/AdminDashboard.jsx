@@ -547,6 +547,7 @@ const AdminDashboard = () => {
                                             <th style={{ padding: '16px', textAlign: 'left', fontSize: '13px', fontWeight: '500', color: '#8a92a6', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Order ID</th>
                                             <th style={{ padding: '16px', textAlign: 'left', fontSize: '13px', fontWeight: '500', color: '#8a92a6', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Customer</th>
                                             <th style={{ padding: '16px', textAlign: 'left', fontSize: '13px', fontWeight: '500', color: '#8a92a6', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Product</th>
+                                            <th style={{ padding: '16px', textAlign: 'left', fontSize: '13px', fontWeight: '500', color: '#8a92a6', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Delivery Info</th>
                                             <th style={{ padding: '16px', textAlign: 'left', fontSize: '13px', fontWeight: '500', color: '#8a92a6', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Total</th>
                                             <th style={{ padding: '16px', textAlign: 'left', fontSize: '13px', fontWeight: '500', color: '#8a92a6', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Status</th>
                                             <th style={{ padding: '16px', textAlign: 'left', fontSize: '13px', fontWeight: '500', color: '#8a92a6', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>Date</th>
@@ -555,7 +556,7 @@ const AdminDashboard = () => {
                                     <tbody>
                                         {filteredOrders.length === 0 ? (
                                             <tr>
-                                                <td colSpan="6" style={{ padding: '24px', textAlign: 'center', color: '#8a92a6' }}>No orders found</td>
+                                                <td colSpan="7" style={{ padding: '24px', textAlign: 'center', color: '#8a92a6' }}>No orders found</td>
                                             </tr>
                                         ) : (
                                             filteredOrders.map(order => (
@@ -563,6 +564,7 @@ const AdminDashboard = () => {
                                                     <td style={{ padding: '16px', color: '#fff', fontSize: '14px' }}>#{String(order.id).padStart(5, '0')}</td>
                                                     <td style={{ padding: '16px', color: '#d1d5db', fontSize: '14px' }}>Guest User</td>
                                                     <td style={{ padding: '16px', color: '#d1d5db', fontSize: '14px' }}>{order.items || '-'}</td>
+                                                    <td style={{ padding: '16px', color: '#d1d5db', fontSize: '14px' }}>{order.shipping_address || 'Pickup'}</td>
                                                     <td style={{ padding: '16px', color: '#fff', fontSize: '14px' }}>₱{parseFloat(order.total_amount || 0).toFixed(2)}</td>
                                                     <td style={{ padding: '16px' }}>
                                                         <select
